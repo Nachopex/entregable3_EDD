@@ -68,3 +68,19 @@ int Lista_doblemente_enlazada::size() {
 bool Lista_doblemente_enlazada::isEmpty() {
     return cabeza == nullptr; 
 }
+
+void Lista_doblemente_enlazada::imprimir_muestra(int max_elementos) {
+    Nodo* temporal = cabeza;
+    int contador = 0;
+    
+    while(temporal != nullptr && contador < max_elementos) {
+        std::cout << "    - Clave: " << temporal->clave 
+                  << " | Tweets publicados: " << temporal->cantidad_tweets << std::endl;
+        temporal = temporal->siguiente;
+        contador++;
+    }
+    
+    if (temporal != nullptr) {
+        std::cout << "    ... (hay mas elementos, pero se omiten para la prueba)" << std::endl;
+    }
+}

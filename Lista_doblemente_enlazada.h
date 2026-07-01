@@ -32,6 +32,8 @@ public:
     bool isEmpty();
     int size();
     int buscar_cantidad(std::string clave);
+
+    void imprimir_muestra(int max_elementos);
 };
 
 #endif

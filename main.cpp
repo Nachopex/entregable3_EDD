@@ -92,6 +92,40 @@ int cargar_tabla(std::vector<Tabla_hash> &tablas_ID, std::vector<Tabla_hash> &ta
     return 0;
 }
 
+template <typename Tabla_hash>
+void probar_tabla_hash(std::vector<Tabla_hash>& tabla, const std::string& nombre_tabla) {
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "REPORTE DE PRUEBA: " << nombre_tabla << std::endl;
+    std::cout << "========================================" << std::endl;
+    
+    int espacios_vacios = 0;
+    int maximas_colisiones = 0;
+    int muestras_impresas = 0;
+
+    for (int i = 0; i < tabla.size(); i++) {
+        if (tabla[i].isEmpty()) {
+            espacios_vacios++;
+        } else {
+            if (tabla[i].size() > maximas_colisiones) {
+                maximas_colisiones = tabla[i].size();
+            }
+            
+
+            if (muestras_impresas < 3) {
+                std::cout << "-> En el indice Hash [" << i << "] tenemos " << tabla[i].size() << " usuarios distintos:" << std::endl;
+                tabla[i].imprimir_muestra(5);
+                muestras_impresas++;
+            }
+        }
+    }
+
+    std::cout << "\n--- ESTADISTICAS ---" << std::endl;
+    std::cout << "* Capacidad total de la tabla: " << tabla.size() << std::endl;
+    std::cout << "* Espacios vacios (sin usar): " << espacios_vacios << std::endl;
+    std::cout << "* Maximas colisiones (largo de la lista mas grande): " << maximas_colisiones << std::endl;
+    std::cout << "========================================\n" << std::endl;
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
@@ -101,6 +135,9 @@ int main(int argc, char* argv[]) {
     std::vector<Lista_doblemente_enlazada> tablas_ID(1000);
     std::vector<Lista_doblemente_enlazada> tablas_screen_name(1000);
     cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv", argv[1]);
+
+    probar_tabla_hash(tablas_ID, "Tabla de User IDs");
+    probar_tabla_hash(tablas_screen_name, "Tabla de Screen Names");
 
     return 0;
 }
