@@ -2,8 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include "Lista_doblemente_enlazada.h"
-
+#include "hashing_cerrado.h"
+#include "hashing_abierto.h"
 std::vector<std::string> separarLineaCSV(const std::string& linea) {
     std::vector<std::string> columnas;
     std::string columna_actual;
@@ -34,9 +34,8 @@ int funcionHash(std::string clave, int capacidad) {
 }
 
 
-
-template <typename Tabla_hash>
-int cargar_tabla(std::vector<Tabla_hash> &tablas_ID, std::vector<Tabla_hash> &tablas_screen_name, const std::string &filename, const std::string &tipo_hash) {
+template <typename TipoTabla>
+int cargar_tabla(TipoTabla &tabla_ID, TipoTabla &tabla_screen_name, const std::string &filename) {
     
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -53,13 +52,14 @@ int cargar_tabla(std::vector<Tabla_hash> &tablas_ID, std::vector<Tabla_hash> &ta
     bool en_comillas = false;
 
     while (std::getline(file, line)) {
-
         registro_completo += line;
+        
         for (char c : line) {
             if (c == '\"') {
                 en_comillas = !en_comillas;
             }
         }
+        
         if (en_comillas) {
             registro_completo += "\n";
             continue; 
@@ -68,20 +68,11 @@ int cargar_tabla(std::vector<Tabla_hash> &tablas_ID, std::vector<Tabla_hash> &ta
         std::vector<std::string> columnas = separarLineaCSV(registro_completo);
 
         if (columnas.size() > 7) {
-
-            if(tipo_hash == "hashing_abierto"){
-                std::string user_id = columnas[5];
-                std::string user_screen_name = columnas[7];
-                int hash_user_id = funcionHash(user_id, tablas_ID.size());
-                int hash_user_screen_name = funcionHash(user_screen_name, tablas_screen_name.size());
-                tablas_ID[hash_user_id].insertar_o_sumar(user_id);
-                tablas_screen_name[hash_user_screen_name].insertar_o_sumar(user_screen_name);
-                lineas_leidas++;
-            }
-            else if(tipo_hash == "linear_probing"){
-
-            }
-
+            std::string user_id = columnas[5];
+            std::string user_screen_name = columnas[7];
+            tabla_ID.insertar(user_id);
+            tabla_screen_name.insertar(user_screen_name);
+            lineas_leidas++;
         }
 
         registro_completo.clear();
@@ -92,52 +83,32 @@ int cargar_tabla(std::vector<Tabla_hash> &tablas_ID, std::vector<Tabla_hash> &ta
     return 0;
 }
 
-template <typename Tabla_hash>
-void probar_tabla_hash(std::vector<Tabla_hash>& tabla, const std::string& nombre_tabla) {
-    std::cout << "\n========================================" << std::endl;
-    std::cout << "REPORTE DE PRUEBA: " << nombre_tabla << std::endl;
-    std::cout << "========================================" << std::endl;
-    
-    int espacios_vacios = 0;
-    int maximas_colisiones = 0;
-    int muestras_impresas = 0;
-
-    for (int i = 0; i < tabla.size(); i++) {
-        if (tabla[i].isEmpty()) {
-            espacios_vacios++;
-        } else {
-            if (tabla[i].size() > maximas_colisiones) {
-                maximas_colisiones = tabla[i].size();
-            }
-            
-
-            if (muestras_impresas < 3) {
-                std::cout << "-> En el indice Hash [" << i << "] tenemos " << tabla[i].size() << " usuarios distintos:" << std::endl;
-                tabla[i].imprimir_muestra(5);
-                muestras_impresas++;
-            }
-        }
-    }
-
-    std::cout << "\n--- ESTADISTICAS ---" << std::endl;
-    std::cout << "* Capacidad total de la tabla: " << tabla.size() << std::endl;
-    std::cout << "* Espacios vacios (sin usar): " << espacios_vacios << std::endl;
-    std::cout << "* Maximas colisiones (largo de la lista mas grande): " << maximas_colisiones << std::endl;
-    std::cout << "========================================\n" << std::endl;
-}
-
 
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "entrada incorrecta" << std::endl;
         return 1;
     }
-    std::vector<Lista_doblemente_enlazada> tablas_ID(1000);
-    std::vector<Lista_doblemente_enlazada> tablas_screen_name(1000);
-    cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv", argv[1]);
+    std::string modo = argv[1];
+    if(modo == "hashing_abierto"){
+            hashing_abierto tablas_ID(1000);
+            hashing_abierto tablas_screen_name(1000);
+            cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+            tablas_ID.imprimir_prueba("Tabla de User IDs");
+            tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
+    }
+    else if(modo == "hashing_cerrado"){
+        hashing_cerrado tablas_ID(1000);
+        hashing_cerrado tablas_screen_name(1000);
+        cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+        tablas_ID.imprimir_prueba("Tabla de User IDs");
+        tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
+    }
 
-    probar_tabla_hash(tablas_ID, "Tabla de User IDs");
-    probar_tabla_hash(tablas_screen_name, "Tabla de Screen Names");
+    else{
+        
+    }
+
 
     return 0;
 }
