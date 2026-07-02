@@ -106,7 +106,6 @@ int hashing_cerrado::obtenerPosicion(std::string clave, int intento) {
         case DOUBLE:
             return double_hashing(clave, intento);
         case LINEAR:
-        default:
             return linear_probing(clave, intento);
     }
 };
