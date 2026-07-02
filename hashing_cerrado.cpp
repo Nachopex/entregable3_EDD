@@ -14,11 +14,13 @@ hashing_cerrado::~hashing_cerrado() {
 };
 
 void hashing_cerrado::insertar(std::string clave) {
-    int posicion = linear_probing(clave); 
+    
 
     if ((double)(cantidad + 1) / capacidad >= 0.70) {
         rehash();
     }
+
+    int posicion = linear_probing(clave); 
 
     while (tabla[posicion].estado == OCUPADO) {
         

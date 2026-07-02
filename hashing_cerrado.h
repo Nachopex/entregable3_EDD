@@ -1,7 +1,13 @@
+#ifndef HASHING_CERRADO_H
+#define HASHING_CERRADO_H
+
 #include <vector>
 #include <utility>
 #include <string>
 #include <iostream>
+
+
+
 //Para usar en lineal probing el metodo de la multiplicacion
 const double A = 0.6180339887;
 
@@ -40,3 +46,4 @@ class hashing_cerrado {
 
         void rehash();
 };
+#endif
