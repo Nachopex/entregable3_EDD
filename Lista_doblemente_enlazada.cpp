@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Lista_doblemente_enlazada.h"
-
+#include <iostream>
 
 Nodo::Nodo(std::string c) {
     clave = c;
