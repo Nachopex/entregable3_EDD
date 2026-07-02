@@ -109,17 +109,34 @@ int main(int argc, char* argv[]) {
             tablas_ID.imprimir_prueba("Tabla de User IDs");
             tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
     }
-    // Evaluacion del argumento para ejecutar Hashing Cerrado
-    else if(modo == "hashing_cerrado"){
-        hashing_cerrado tablas_ID(1000);
-        hashing_cerrado tablas_screen_name(1000);
+    // Evaluacion de los argumentos para ejecutar Hashing Cerrado con cada una
+    // de las 3 estrategias de manejo de colisiones solicitadas en el entregable.
+    else if(modo == "hashing_cerrado_linear"){
+        hashing_cerrado tablas_ID(1000, LINEAR);
+        hashing_cerrado tablas_screen_name(1000, LINEAR);
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
         tablas_ID.imprimir_prueba("Tabla de User IDs");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
     }
+    else if(modo == "hashing_cerrado_quadratic"){
+        hashing_cerrado tablas_ID(1000, QUADRATIC);
+        hashing_cerrado tablas_screen_name(1000, QUADRATIC);
+        cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+        tablas_ID.imprimir_prueba("Tabla de User IDs (Quadratic Probing)");
+        tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Quadratic Probing)");
+    }
+    else if(modo == "hashing_cerrado_double"){
+        hashing_cerrado tablas_ID(1000, DOUBLE);
+        hashing_cerrado tablas_screen_name(1000, DOUBLE);
+        cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+        tablas_ID.imprimir_prueba("Tabla de User IDs (Double Hashing)");
+        tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Double Hashing)");
+    }
     // Flujo alternativo
     else{
-        
+        std::cerr << "Modo desconocido. Use: hashing_abierto, hashing_cerrado_linear, "
+                  << "hashing_cerrado_quadratic o hashing_cerrado_double." << std::endl;
+        return 1;
     }
 
     return 0;
