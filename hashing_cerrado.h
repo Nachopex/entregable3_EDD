@@ -23,6 +23,14 @@ const double A = 0.6180339887;
 enum Estado { VACIO, OCUPADO, BORRADO };
 
 /*
+ * Enumeracion que indica que estrategia de manejo de colisiones (open
+ * addressing) debe utilizar una instancia de hashing_cerrado. Se define
+ * al momento de crear la tabla y se mantiene fija durante toda su vida,
+ * incluyendo los rehash.
+ */
+enum TipoProbing { LINEAR, QUADRATIC, DOUBLE };
+
+/*
  * Estructura que representa cada espacio dentro de la tabla hash.
  * Almacena la clave, el valor asociado y su estado actual.
  */
@@ -42,13 +50,19 @@ struct Celda {
 class hashing_cerrado {
     private:
         std::vector<Celda> tabla; // Contenedor principal de la tabla
+        TipoProbing tipo_probing;  // Estrategia de manejo de colisiones
         int capacidad;            // Tamano total reservado para la tabla
         int cantidad;             // Numero actual de elementos insertados
-    
+
+        int hashPrimario(std::string clave); // Funcion hash primaria
+        int hashSecundario(std::string clave); // Funcion hash secundaria para double hashing
+        int obtenerPosicion(std::string clave, int intento); // Calcula la posicion final considerando colisiones
+        int siguientePotenciaDeDos(int n); // Retorna la menor potencia de 2 mayor o igual a n (n >= 1).
+
     public:
     
         // Constructor que inicializa la tabla con una capacidad inicial
-        hashing_cerrado(int capacidad);
+        hashing_cerrado(int capacidad, TipoProbing tipo);
         
         // Destructor
         ~hashing_cerrado();
@@ -57,9 +71,9 @@ class hashing_cerrado {
         void insertar(std::string clave);
 
         // Funciones de calculo de indices y resolucion de colisiones
-        int linear_probing(std::string clave);
-        int quadratic_probing(std::string clave);
-        int double_hashing(std::string clave);
+        int linear_probing(std::string clave, int intento);
+        int quadratic_probing(std::string clave, int intento);
+        int double_hashing(std::string clave, int intento);
 
         // Muestra por consola un reporte del estado actual de la tabla
         void imprimir_prueba(std::string nombre_tabla);
