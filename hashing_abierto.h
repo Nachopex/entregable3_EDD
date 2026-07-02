@@ -1,3 +1,9 @@
+/*
+ * Archivo de cabecera para la clase hashing_abierto.
+ * Define la estructura para una tabla hash que resuelve las colisiones
+ * empleando el encadenamiento mediante listas doblemente enlazadas.
+ */
+
 #ifndef HASHING_ABIERTO_H
 #define HASHING_ABIERTO_H
 
@@ -5,17 +11,27 @@
 #include <string>
 #include "Lista_doblemente_enlazada.h"
 
+/*
+ * Clase principal que implementa el hashing abierto.
+ * Cada indice de la tabla hash (vector) contiene una lista doblemente enlazada.
+ */
 class hashing_abierto {
     private:
-        std::vector<Lista_doblemente_enlazada> tabla;
-        int capacidad;
+        std::vector<Lista_doblemente_enlazada> tabla; // Vector contenedor de listas
+        int capacidad;                                // Capacidad fija de la tabla
+        
+        // Genera un indice numerico a partir de una cadena de texto
         int funcionHash(std::string clave);
 
     public:
+        // Inicializa la tabla estableciendo su tamano inicial
         hashing_abierto(int cap);
         ~hashing_abierto();
 
+        // Inserta o actualiza un elemento utilizando la funcion hash para encontrar la cubeta
         void insertar(std::string clave);
+        
+        // Muestra un reporte estadistico sobre la distribucion de elementos en la tabla
         void imprimir_prueba(std::string nombre_tabla);
 };
 
