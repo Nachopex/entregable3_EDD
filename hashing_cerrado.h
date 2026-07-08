@@ -11,6 +11,7 @@
 #include <utility>
 #include <string>
 #include <iostream>
+#include "tipos_clave.h"
 
 /* * Constante utilizada en el metodo de la multiplicacion para la funcion hash.
  * Representa la fraccion de la proporcion para una distribucion uniforme.
@@ -51,18 +52,23 @@ class hashing_cerrado {
     private:
         std::vector<Celda> tabla; // Contenedor principal de la tabla
         TipoProbing tipo_probing;  // Estrategia de manejo de colisiones
+        TipoClave tipo_clave;      // Tipo de clave que maneja la instancia
         int capacidad;            // Tamano total reservado para la tabla
         int cantidad;             // Numero actual de elementos insertados
 
         int hashPrimario(std::string clave); // Funcion hash primaria
         int hashSecundario(std::string clave); // Funcion hash secundaria para double hashing
+        int hashPrimarioUserId(std::string clave);
+        int hashPrimarioScreenName(std::string clave);
+        int hashSecundarioUserId(std::string clave);
+        int hashSecundarioScreenName(std::string clave);
         int obtenerPosicion(std::string clave, int intento); // Calcula la posicion final considerando colisiones
         int siguientePotenciaDeDos(int n); // Retorna la menor potencia de 2 mayor o igual a n (n >= 1).
 
     public:
     
         // Constructor que inicializa la tabla con una capacidad inicial
-        hashing_cerrado(int capacidad, TipoProbing tipo);
+        hashing_cerrado(int capacidad, TipoProbing tipo, TipoClave tipo_clave);
         
         // Destructor
         ~hashing_cerrado();

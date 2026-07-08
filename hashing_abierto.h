@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include "Lista_doblemente_enlazada.h"
+#include "tipos_clave.h"
 
 /*
  * Clase principal que implementa el hashing abierto.
@@ -19,13 +20,16 @@ class hashing_abierto {
     private:
         std::vector<Lista_doblemente_enlazada> tabla; // Vector contenedor de listas
         int capacidad;                                // Capacidad fija de la tabla
+        TipoClave tipo_clave;                         // Tipo de clave que maneja la tabla
         
         // Genera un indice numerico a partir de una cadena de texto
         int funcionHash(std::string clave);
+        int funcionHashUserId(std::string clave);
+        int funcionHashScreenName(std::string clave);
 
     public:
         // Inicializa la tabla estableciendo su tamano inicial
-        hashing_abierto(int cap);
+        hashing_abierto(int cap, TipoClave tipo);
         ~hashing_abierto();
 
         // Inserta o actualiza un elemento utilizando la funcion hash para encontrar la cubeta

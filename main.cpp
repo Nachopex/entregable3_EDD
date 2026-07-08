@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <unordered_map>
 #include "hashing_cerrado.h"
 #include "hashing_abierto.h"
 
@@ -90,6 +91,95 @@ int cargar_tabla(TipoTabla &tabla_ID, TipoTabla &tabla_screen_name, const std::s
     return 0;
 }
 
+template <typename Mapa>
+int cargar_mapa(Mapa &mapa_ID, Mapa &mapa_screen_name, const std::string &filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo." << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    std::getline(file, line);
+
+    int lineas_leidas = 0;
+    std::string registro_completo = "";
+    bool en_comillas = false;
+
+    while (std::getline(file, line)) {
+        registro_completo += line;
+
+        for (char c : line) {
+            if (c == '\"') {
+                en_comillas = !en_comillas;
+            }
+        }
+
+        if (en_comillas) {
+            registro_completo += "\n";
+            continue;
+        }
+
+        std::vector<std::string> columnas = separarLineaCSV(registro_completo);
+        if (columnas.size() > 7) {
+            std::string user_id = columnas[5];
+            std::string user_screen_name = columnas[7];
+            mapa_ID[user_id]++;
+            mapa_screen_name[user_screen_name]++;
+            lineas_leidas++;
+        }
+
+        registro_completo.clear();
+    }
+
+    file.close();
+    std::cout << "Se cargaron " << lineas_leidas << " tweets correctamente." << std::endl;
+    return 0;
+}
+
+template <typename Mapa>
+void imprimir_reporte_mapa(const Mapa &mapa, const std::string &nombre_tabla) {
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "REPORTE DE PRUEBA: " << nombre_tabla << std::endl;
+    std::cout << "========================================" << std::endl;
+
+    int muestras_impresas = 0;
+    for (const auto &par : mapa) {
+        if (muestras_impresas < 5) {
+            std::cout << "-> Clave: " << par.first << " | Tweets: " << par.second << std::endl;
+            muestras_impresas++;
+        } else {
+            break;
+        }
+    }
+
+    std::cout << "\n--- ESTADISTICAS ---" << std::endl;
+    std::cout << "* Elementos unicos: " << mapa.size() << std::endl;
+    std::cout << "========================================\n" << std::endl;
+}
+
+void imprimir_reporte_unordered_map(const std::unordered_map<std::string, int> &mapa, const std::string &nombre_tabla) {
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "REPORTE DE PRUEBA: " << nombre_tabla << std::endl;
+    std::cout << "========================================" << std::endl;
+
+    int muestras_impresas = 0;
+    for (const auto &par : mapa) {
+        if (muestras_impresas < 5) {
+            std::cout << "-> Clave: " << par.first << " | Tweets: " << par.second << std::endl;
+            muestras_impresas++;
+        } else {
+            break;
+        }
+    }
+
+    std::cout << "\n--- ESTADISTICAS ---" << std::endl;
+    std::cout << "* Elementos unicos: " << mapa.size() << std::endl;
+    std::cout << "* Buckets: " << mapa.bucket_count() << std::endl;
+    std::cout << "* Factor de carga: " << mapa.load_factor() << std::endl;
+    std::cout << "========================================\n" << std::endl;
+}
+
 // Punto de entrada del programa. Recibe un argumento por consola que dicta 
 // el modo de operacion a utilizar (tipo de tabla Hash a probar).
 int main(int argc, char* argv[]) {
@@ -103,8 +193,8 @@ int main(int argc, char* argv[]) {
     
     // Evaluacion del argumento para ejecutar Hashing Abierto
     if(modo == "hashing_abierto"){
-            hashing_abierto tablas_ID(1000);
-            hashing_abierto tablas_screen_name(1000);
+            hashing_abierto tablas_ID(1000, USER_ID);
+            hashing_abierto tablas_screen_name(1000, USER_SCREEN_NAME);
             cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
             tablas_ID.imprimir_prueba("Tabla de User IDs");
             tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
@@ -112,30 +202,37 @@ int main(int argc, char* argv[]) {
     // Evaluacion de los argumentos para ejecutar Hashing Cerrado con cada una
     // de las 3 estrategias de manejo de colisiones solicitadas en el entregable.
     else if(modo == "hashing_cerrado_linear"){
-        hashing_cerrado tablas_ID(1000, LINEAR);
-        hashing_cerrado tablas_screen_name(1000, LINEAR);
+        hashing_cerrado tablas_ID(1000, LINEAR, USER_ID);
+        hashing_cerrado tablas_screen_name(1000, LINEAR, USER_SCREEN_NAME);
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
         tablas_ID.imprimir_prueba("Tabla de User IDs");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
     }
     else if(modo == "hashing_cerrado_quadratic"){
-        hashing_cerrado tablas_ID(1000, QUADRATIC);
-        hashing_cerrado tablas_screen_name(1000, QUADRATIC);
+        hashing_cerrado tablas_ID(1000, QUADRATIC, USER_ID);
+        hashing_cerrado tablas_screen_name(1000, QUADRATIC, USER_SCREEN_NAME);
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
         tablas_ID.imprimir_prueba("Tabla de User IDs (Quadratic Probing)");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Quadratic Probing)");
     }
     else if(modo == "hashing_cerrado_double"){
-        hashing_cerrado tablas_ID(1000, DOUBLE);
-        hashing_cerrado tablas_screen_name(1000, DOUBLE);
+        hashing_cerrado tablas_ID(1000, DOUBLE, USER_ID);
+        hashing_cerrado tablas_screen_name(1000, DOUBLE, USER_SCREEN_NAME);
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
         tablas_ID.imprimir_prueba("Tabla de User IDs (Double Hashing)");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Double Hashing)");
     }
+    else if(modo == "unordered_map"){
+        std::unordered_map<std::string, int> tablas_ID;
+        std::unordered_map<std::string, int> tablas_screen_name;
+        cargar_mapa(tablas_ID, tablas_screen_name, "auspol2019.csv");
+        imprimir_reporte_unordered_map(tablas_ID, "Tabla de User IDs (unordered_map)");
+        imprimir_reporte_unordered_map(tablas_screen_name, "Tabla de Screen Names (unordered_map)");
+    }
     // Flujo alternativo
     else{
         std::cerr << "Modo desconocido. Use: hashing_abierto, hashing_cerrado_linear, "
-                  << "hashing_cerrado_quadratic o hashing_cerrado_double." << std::endl;
+                  << "hashing_cerrado_quadratic, hashing_cerrado_double o unordered_map." << std::endl;
         return 1;
     }
 

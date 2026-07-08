@@ -6,7 +6,7 @@
 #include <cmath>
 
 // Inicializa la tabla con la capacidad indicada, cantidad en 0 y reserva el espacio en el vector.
-hashing_cerrado::hashing_cerrado(int cap, TipoProbing tipo) : tabla(1), capacidad(1), cantidad(0), tipo_probing(tipo){
+hashing_cerrado::hashing_cerrado(int cap, TipoProbing tipo, TipoClave tipo_clave) : tabla(1), capacidad(1), cantidad(0), tipo_probing(tipo), tipo_clave(tipo_clave){
     capacidad = siguientePotenciaDeDos(cap);
     tabla.assign(capacidad, Celda());
 };
@@ -60,19 +60,28 @@ int hashing_cerrado::linear_probing(std::string clave, int intento) {
 // Calcula el indice base para una clave utilizando el metodo de la multiplicacion:
 // h(k) = floor(m * (suma_ascii(k) * A mod 1)). Esta es la funcion hash primaria
 // que utilizan las 3 estrategias de manejo de colisiones como punto de partida.
-int hashing_cerrado::hashPrimario(std::string clave) {
-    unsigned long valor = 0;
-    
-    // Suma los valores ASCII de todos los caracteres de la clave.
-    for (char c : clave) {
-        valor += c;
+int hashing_cerrado::hashPrimarioUserId(std::string clave) {
+    unsigned long long hash = 1469598103934665603ULL;
+    for (unsigned char c : clave) {
+        hash ^= c;
+        hash *= 1099511628211ULL;
     }
-    
-    // Aplicacion del metodo de la multiplicacion: h(k) = m * (k*A mod 1).
-    double multiplicacion = valor * A;
-    double parte_fraccionaria = multiplicacion - (int)multiplicacion;
+    return (int)(hash % capacidad);
+}
 
-    return (int)(capacidad * parte_fraccionaria);
+int hashing_cerrado::hashPrimarioScreenName(std::string clave) {
+    unsigned long long hash = 5381ULL;
+    for (unsigned char c : clave) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return (int)(hash % capacidad);
+}
+
+int hashing_cerrado::hashPrimario(std::string clave) {
+    if (tipo_clave == USER_ID) {
+        return hashPrimarioUserId(clave);
+    }
+    return hashPrimarioScreenName(clave);
 };
 
 // Calcula una funcion hash secundaria, distinta e independiente de la primaria,
@@ -83,16 +92,35 @@ int hashing_cerrado::hashPrimario(std::string clave) {
 // mcd(salto, capacidad) = 1. Cuando el salto y la capacidad son coprimos, la
 // secuencia (h1(k) + i*salto) mod capacidad recorre las m celdas de la tabla
 // sin repetir ninguna antes de completarla, evitando ciclos infinitos.
-int hashing_cerrado::hashSecundario(std::string clave) {
-    unsigned long valor = 0;
-    // Se pondera cada caracter por su posicion, de forma que el resultado
-    // difiera del de hashPrimario incluso para claves cortas (evitando que
-    // ambas funciones queden correlacionadas).
-    for (size_t i = 0; i < clave.size(); i++) {
-        valor += (unsigned long)clave[i] * (i + 1);
+int hashing_cerrado::hashSecundarioUserId(std::string clave) {
+    if (capacidad <= 1) {
+        return 1;
     }
-    // Se fuerza a que el resultado sea impar: 1 + 2*k siempre es impar.
+
+    unsigned long valor = 0;
+    for (size_t i = 0; i < clave.size(); i++) {
+        valor += (unsigned long)(clave[i]) * (i + 1) * 131;
+    }
     return 1 + 2 * (int)(valor % (capacidad / 2));
+}
+
+int hashing_cerrado::hashSecundarioScreenName(std::string clave) {
+    if (capacidad <= 1) {
+        return 1;
+    }
+
+    unsigned long valor = 0;
+    for (size_t i = 0; i < clave.size(); i++) {
+        valor += (unsigned long)(clave[i]) * (i + 3) * 17;
+    }
+    return 1 + 2 * (int)(valor % (capacidad / 2));
+}
+
+int hashing_cerrado::hashSecundario(std::string clave) {
+    if (tipo_clave == USER_ID) {
+        return hashSecundarioUserId(clave);
+    }
+    return hashSecundarioScreenName(clave);
 };
 
 // Determina la posicion candidata a evaluar en el intento indicado, segun la

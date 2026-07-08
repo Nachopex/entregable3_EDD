@@ -6,19 +6,35 @@
 #include <iostream>
 
 // Constructor que dimensiona el vector para que coincida con la capacidad especificada.
-hashing_abierto::hashing_abierto(int cap) : capacidad(cap), tabla(cap) {}
+hashing_abierto::hashing_abierto(int cap, TipoClave tipo) : capacidad(cap), tabla(cap), tipo_clave(tipo) {}
 
 // Destructor vacio, las listas doblemente enlazadas manejan su propia liberacion de memoria.
 hashing_abierto::~hashing_abierto() {}
 
 // Calcula la posicion en la tabla sumando el valor ASCII de los caracteres 
 // y aplicando la operacion modulo con la capacidad total.
-int hashing_abierto::funcionHash(std::string clave) {
-    unsigned long hash = 0;
-    for (char c : clave) {
-        hash += c;
+int hashing_abierto::funcionHashUserId(std::string clave) {
+    unsigned long long hash = 1469598103934665603ULL;
+    for (unsigned char c : clave) {
+        hash ^= c;
+        hash *= 1099511628211ULL;
     }
     return hash % capacidad;
+}
+
+int hashing_abierto::funcionHashScreenName(std::string clave) {
+    unsigned long long hash = 5381ULL;
+    for (unsigned char c : clave) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash % capacidad;
+}
+
+int hashing_abierto::funcionHash(std::string clave) {
+    if (tipo_clave == USER_ID) {
+        return funcionHashUserId(clave);
+    }
+    return funcionHashScreenName(clave);
 }
 
 // Obtiene el indice a traves de la funcion hash y delega la insercion/actualizacion 
