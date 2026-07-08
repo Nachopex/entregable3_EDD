@@ -31,18 +31,16 @@ void hashing_cerrado::insertar(std::string clave) {
     int posicion = obtenerPosicion(clave, intento);
 
     // Busca una celda disponible o la celda que ya contiene la clave.
+    // Cada nuevo intento recalcula la posicion con la estrategia elegida,
+    // para que linear, quadratic y double hashing realmente se diferencien.
     while (tabla[posicion].estado == OCUPADO) {
-        
-        // Si la clave ya existe, solo incrementa su valor (conteo) y finaliza.
         if (tabla[posicion].clave == clave) {
             tabla[posicion].valor++;
             return;
         }
-        
-        // Se avanza al siguiente intento; la posicion resultante depende
-        // de la estrategia de manejo de colisiones configurada.
+
         intento++;
-        posicion = (posicion + 1) % capacidad;
+        posicion = obtenerPosicion(clave, intento);
     }
 
     // Se encontro una celda vacia, se asignan los datos del nuevo elemento.
@@ -108,6 +106,7 @@ int hashing_cerrado::obtenerPosicion(std::string clave, int intento) {
         case LINEAR:
             return linear_probing(clave, intento);
     }
+    return linear_probing(clave, intento);
 };
 
 // Prueba cuadratica con formula triangular: h(k, i) = (h(k) + (i^2+i)/2) mod m,
