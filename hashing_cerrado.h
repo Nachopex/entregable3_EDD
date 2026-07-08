@@ -86,5 +86,8 @@ class hashing_cerrado {
 
         // Redimensiona la tabla cuando el factor de carga supera el limite establecido
         void rehash();
+
+        // Entrega una estimacion del uso de memoria de la estructura en bytes
+        size_t memoria_aproximada_bytes();
 };
 #endif

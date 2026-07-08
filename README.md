@@ -23,3 +23,18 @@ o
 ```bash
 ./main unordered_map
 ```
+
+benchmark experimental
+
+```bash
+./main benchmark
+```
+
+Ese modo genera `resultados_experimentos.csv` con mediciones por repeticion,
+promedios y desviaciones estandar impresas en consola para comparar:
+
+- `hashing_abierto`
+- `hashing_cerrado_linear`
+- `hashing_cerrado_quadratic`
+- `hashing_cerrado_double`
+- `unordered_map`

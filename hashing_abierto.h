@@ -37,6 +37,9 @@ class hashing_abierto {
         
         // Muestra un reporte estadistico sobre la distribucion de elementos en la tabla
         void imprimir_prueba(std::string nombre_tabla);
+
+        // Entrega una estimacion del uso de memoria de la estructura en bytes
+        size_t memoria_aproximada_bytes();
 };
 
 #endif

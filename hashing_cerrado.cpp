@@ -258,3 +258,9 @@ void hashing_cerrado::imprimir_prueba(std::string nombre_tabla) {
     std::cout << "* Factor de carga de la tabla: " << factor_carga << "%" << std::endl;
     std::cout << "========================================\n" << std::endl;
 }
+
+size_t hashing_cerrado::memoria_aproximada_bytes() {
+    size_t memoria = sizeof(*this);
+    memoria += tabla.capacity() * sizeof(Celda);
+    return memoria;
+}

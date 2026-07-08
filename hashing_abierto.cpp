@@ -80,3 +80,16 @@ void hashing_abierto::imprimir_prueba(std::string nombre_tabla) {
     std::cout << "* Maximas colisiones: " << maximas_colisiones << std::endl;
     std::cout << "========================================\n" << std::endl;
 }
+
+size_t hashing_abierto::memoria_aproximada_bytes() {
+    size_t memoria = sizeof(*this);
+    memoria += tabla.capacity() * sizeof(Lista_doblemente_enlazada);
+
+    size_t nodos = 0;
+    for (auto &lista : tabla) {
+        nodos += static_cast<size_t>(lista.size());
+    }
+
+    memoria += nodos * sizeof(Nodo);
+    return memoria;
+}
