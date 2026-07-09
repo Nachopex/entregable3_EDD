@@ -50,16 +50,15 @@ void hashing_cerrado::insertar(std::string clave) {
     cantidad++;
 }
 
-// Calcula el indice base para una clave utilizando el metodo de la multiplicacion.
+// Calcula la posición candidato mediante la estrategia de direccionamiento abierto con prueba lineal.
+// Toma el índice devuelto por la función hash primaria y le suma de forma secuencial el número de intento.
 int hashing_cerrado::linear_probing(std::string clave, int intento) {
     // prueba lineal: h(k, i) = (h(k) + i) mod m. Avanza de a una posicion por cada
     //colision, recorriendo la tabla de forma circular y consecutiva.
     return (hashPrimario(clave) + intento) % capacidad;
 };
 
-// Calcula el indice base para una clave utilizando el metodo de la multiplicacion:
-// h(k) = floor(m * (suma_ascii(k) * A mod 1)). Esta es la funcion hash primaria
-// que utilizan las 3 estrategias de manejo de colisiones como punto de partida.
+// Calcula el indice base para UserId usando el algoritmo FNV-1a y aplicando modulo.
 int hashing_cerrado::hashPrimarioUserId(std::string clave) {
     unsigned long long hash = 1469598103934665603ULL;
     for (unsigned char c : clave) {
@@ -69,6 +68,7 @@ int hashing_cerrado::hashPrimarioUserId(std::string clave) {
     return (int)(hash % capacidad);
 }
 
+// Calcula el indice base para ScreenName usando el algoritmo DJB2 y aplicando modulo.
 int hashing_cerrado::hashPrimarioScreenName(std::string clave) {
     unsigned long long hash = 5381ULL;
     for (unsigned char c : clave) {

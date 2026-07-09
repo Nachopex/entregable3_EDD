@@ -11,8 +11,8 @@ hashing_abierto::hashing_abierto(int cap, TipoClave tipo) : capacidad(cap), tabl
 // Destructor vacio, las listas doblemente enlazadas manejan su propia liberacion de memoria.
 hashing_abierto::~hashing_abierto() {}
 
-// Calcula la posicion en la tabla sumando el valor ASCII de los caracteres 
-// y aplicando la operacion modulo con la capacidad total.
+// Aplica el algoritmo de hash FNV-1a a la clave y calcula la posicion 
+// en la tabla usando el modulo con la capacidad.
 int hashing_abierto::funcionHashUserId(std::string clave) {
     unsigned long long hash = 1469598103934665603ULL;
     for (unsigned char c : clave) {
