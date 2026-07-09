@@ -279,35 +279,55 @@ int main(int argc, char* argv[]) {
     std::string modo = argv[1];
 
     if (modo == "hashing_abierto") {
+
         hashing_abierto tablas_ID(1000, USER_ID);
         hashing_abierto tablas_screen_name(1000, USER_SCREEN_NAME);
+
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+
         tablas_ID.imprimir_prueba("Tabla de User IDs");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
+
     } else if (modo == "hashing_cerrado_linear") {
+
         hashing_cerrado tablas_ID(1000, LINEAR, USER_ID);
         hashing_cerrado tablas_screen_name(1000, LINEAR, USER_SCREEN_NAME);
+
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+
         tablas_ID.imprimir_prueba("Tabla de User IDs");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names");
+
     } else if (modo == "hashing_cerrado_quadratic") {
+
         hashing_cerrado tablas_ID(1000, QUADRATIC, USER_ID);
         hashing_cerrado tablas_screen_name(1000, QUADRATIC, USER_SCREEN_NAME);
+
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+
         tablas_ID.imprimir_prueba("Tabla de User IDs (Quadratic Probing)");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Quadratic Probing)");
+
     } else if (modo == "hashing_cerrado_double") {
+
         hashing_cerrado tablas_ID(1000, DOUBLE, USER_ID);
         hashing_cerrado tablas_screen_name(1000, DOUBLE, USER_SCREEN_NAME);
+
         cargar_tabla(tablas_ID, tablas_screen_name, "auspol2019.csv");
+
         tablas_ID.imprimir_prueba("Tabla de User IDs (Double Hashing)");
         tablas_screen_name.imprimir_prueba("Tabla de Screen Names (Double Hashing)");
+
     } else if (modo == "unordered_map") {
+
         std::unordered_map<std::string, int> tablas_ID;
         std::unordered_map<std::string, int> tablas_screen_name;
+
         cargar_mapa(tablas_ID, tablas_screen_name, "auspol2019.csv");
+
         imprimir_reporte_unordered_map(tablas_ID, "Tabla de User IDs (unordered_map)");
         imprimir_reporte_unordered_map(tablas_screen_name, "Tabla de Screen Names (unordered_map)");
+        
     } else if (modo == "benchmark") {
         const std::string dataset = "auspol2019.csv";
         const int repeticiones = 20;
